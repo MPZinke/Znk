@@ -1,0 +1,96 @@
+RESERVED WORDS AND TYPES
+
+NUMERIC:
+Integer:
+small—8bit
+short—16bit
+int—32bit
+long—48bit
+large—64bit
+
+Floating Point:
+float—32bit
+double—64bit
+
+
+TEXT:
+char—8bit
+sym, symbol—16bit
+word—16bit
+
+
+MISC:
+comp, composition—structure
+for
+do
+while
+if
+elif
+else
+
+MODIFIERS:
+const
+register
+
+
+SPECIAL CHARACTER
+;—execute
+""—string
+''—character
+=
++ 
+-
+*
+/
+%
+++
+--
+**—square
++=
+-=
+*=
+/=
+
+
+!=
+&&
+&&=
+||
+||=
+<
+<=
+>
+>=
+?—ternary
+
+!
+!- —complement
+|
+|=
+&
+&=
+^
+^=
+<<
+<<=
+>>
+>>=
+
+$—values at location
+@—address of value
+
+
+{}—scope
+[]—subprocess  EG []
+()—parameter
+:—scope resolution
+
+,—enumeration
+.—accessing, indexing
+
+`<DEFINITION>`—preprocessor replace
+#—preprocessor
+~—global viewable outside the scope of the page (public vs private)
+//
+/* */
+
