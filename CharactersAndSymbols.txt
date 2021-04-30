@@ -51,12 +51,18 @@ SPECIAL CHARACTER
 *=
 /=
 
+&&=
+||=
+|=
+&=
+^=
+<<=
+>>=
+
 
 !=
 &&
-&&=
 ||
-||=
 <
 <=
 >
@@ -66,15 +72,10 @@ SPECIAL CHARACTER
 !
 !- —complement
 |
-|=
 &
-&=
 ^
-^=
 <<
-<<=
 >>
->>=
 
 $—values at location
 @—address of value

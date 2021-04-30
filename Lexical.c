@@ -11,6 +11,7 @@
 ***********************************************************************************************************************/
 
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -37,11 +38,54 @@ enum
 	ELIF_KEYWORD,
 	ELSE_KEYWORD
 
-	// ———— OPERATORS ————
+	// ———— OPERATORS
+	// ———— OPERATORS::ASSIGN
+	ASSIGN_OPERATOR,  // =
+	ADDITION_ASSIGN_OPERATOR,  // +=
+	SUBTRACT_ASSIGN_OPERATOR,  // -=
+	MULTIPLY_ASSIGN_OPERATOR,  // *=
+	DIVIDE_ASSIGN_OPERATOR,  // /=
+	// &&=
+	// ||=
+	// |=
+	// &=
+	// ^=
+	// <<=
+	// >>=
+	// ———— OPERATORS::MATHEMATICAL
+	ADDITION_OPERATOR,  // +
+	SUBTRACTION_OPERATOR,  // -
+	MULTIPLY_OPERATOR,  // *
+	DIVIDE_OPERATOR,  // /
+	MODULO_OPERATOR,  // %
+	INCREMENT_OPERATOR,  // ++
+	DECREMENT_OPERATOR,  // --
+	SQUARE_OPERATOR,  // **
+	// ———— OPERATORS::LOGICAL
+	EQUIVALENCE_OPERATOR,  // ==
+	NON_EQUIVALENCE_OPERATOR,  // !=
+	OR_OPERATOR,  // ||
+	AND_OPERATOR,  // &&
+	LESS_THAN_OPERATOR,  // <
+	GREATER_THAN_OPERATOR,  // >
+	LESS_THAN_EQUAL_OPERATOR,  // <=
+	GREATER_THAN_EQUAL_OPERATOR,  // >=
+	BOOLEAN_NOT_OPERATOR,  // !
+	// ———— OPERATORS::BINARY
+	COMPLEMENT_OPERATOR,  // !- (equivalent to 0xFFFFFFFF ^ value)
+	BINARY_OR_OPERATOR,  // |
+	BINARY_AND_OPERATOR,  // &
+	XOR_OPERATOR,  // ^
+	BIT_SHIFT_LEFT_OPERATOR,  // <<
+	BIT_SHIFT_RIGHT_OPERATOR,  // >>
+	// ———— OPERATORS::ADDRESSING
+	DEREFERENCE_OPERATOR,  // $
+	REFERENCE_OPERATOR,  // @
+	DOT_OPERATOR,  // . (for accessing an offset from an address of an array or structure/composition)
 
-
-
-}
+	// ———— OPERATORS
+	_OPERATOR,  // 
+};
 
 
 typedef struct Token
