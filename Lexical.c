@@ -14,66 +14,8 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-// ———— KEY WORDS
-// ——— KEY WORDS::INTEGER
-#define SMALL_KEYWORD_DEF "small"
-#define SHORT_KEYWORD_DEF "short"
-#define INT_KEYWORD_DEF "int"
-#define LONG_KEYWORD_DEF "long"
-#define LARGE_KEYWORD_DEF "large"
-// ———— KEY WORDS::FLOATING POINT
-#define DOUBLE_KEYWORD_DEF "double"
-// ———— BRANCHING ————
-#define FOR_KEYWORD_DEF "for"
-#define DO_KEYWORD_DEF "do"
-#define WHILE_KEYWORD_DEF "while"
-#define IF_KEYWORD_DEF "if"
-#define ELIF_KEYWORD_DEF "elif"
-#define ELSE_KEYWORD_DEF "else"
-// ———— OPERATORS::ASSIGN
-#define ADDITION_ASSIGN_OPERATOR_DEF "+="
-#define SUBTRACT_ASSIGN_OPERATOR_DEF "-="
-#define MULTIPLY_ASSIGN_OPERATOR_DEF "*="
-#define DIVIDE_ASSIGN_OPERATOR_DEF "/="
-#define AND_ASSIGN_OPERATOR_DEF "&&="
-#define OR_ASSIGN_OPERATOR_DEF "||="
-#define BITWISE_OR_ASSIGN_OPERATOR_DEF "|="
-#define BITWISE_AND_ASSIGN_OPERATOR_DEF "&="
-#define XOR_ASSIGN_OPERATOR_DEF "^="
-#define BIT_SHIFT_LEFT_ASSIGN_OPERATOR_DEF "<<="
-#define BIT_SHIFT_RIGHT_ASSIGN_OPERATOR_DEF ">>="
-// ———— OPERATORS::MATHEMATICAL
-#define ADDITION_OPERATOR_DEF "+"
-#define SUBTRACTION_OPERATOR_DEF "-"
-#define MULTIPLY_OPERATOR_DEF "*"
-#define DIVIDE_OPERATOR_DEF "/"
-#define MODULO_OPERATOR_DEF "%"
-#define INCREMENT_OPERATOR_DEF "++"
-#define DECREMENT_OPERATOR_DEF "--"
-#define SQUARE_OPERATOR_DEF "**"
-// ———— OPERATORS::LOGICAL
-#define EQUIVALENCE_OPERATOR_DEF "=="
-#define NON_EQUIVALENCE_OPERATOR_DEF "!="
-#define OR_OPERATOR_DEF "||"
-#define AND_OPERATOR_DEF "&&"
-#define LESS_THAN_OPERATOR_DEF "<"
-#define GREATER_THAN_OPERATOR_DEF ">"
-#define LESS_THAN_EQUAL_OPERATOR_DEF "<="
-#define GREATER_THAN_EQUAL_OPERATOR_DEF ">="
-#define BOOLEAN_NOT_OPERATOR_DEF "!"
-// ———— OPERATORS::BINARY
-#define COMPLEMENT_OPERATOR_DEF "!-"
-#define BITWISE_OR_OPERATOR_DEF "|"
-#define BITWISE_AND_OPERATOR_DEF "&"
-#define XOR_OPERATOR_DEF "^"
-#define BIT_SHIFT_LEFT_OPERATOR_DEF "<<"
-#define BIT_SHIFT_RIGHT_OPERATOR_DEF ">>"
-// ———— OPERATORS::ADDRESSING
-#define DEREFERENCE_OPERATOR_DEF "$"
-#define REFERENCE_OPERATOR_DEF "@"
-#define DOT_OPERATOR_DEF "."
-//TODO: Enumations, etc
 
 // ———— COMPARISIONS
 #define STRING_CHAR_IS_WHITESPACE ((8 <= string[x] && string[x] <= 13) || string[x] == 32)
@@ -81,15 +23,20 @@
 #define STRING_CHAR_IS_NOT_NEWLINE (string[x] != 10 && string[x] != 13)
 #define HEXIDECIMAL_ALLOWED_VALUES ((47 < string[x] && string[x] < 58) || (64 < string[x] && string[x] < 71))
 
-#include "SymbolEnum.c"
+// #define UINT64_MAX 0xFFFFFFFFFFFFFFFF
+
+
+#include "SymbolDefinitions.h"
+#include "SymbolEnum.h"
 
 
 typedef struct Token
 {
-	uint32_t type;
-	uint32_t line;
-	uint32_t column;
-	uint32_t length;
+	uint16_t type;
+	uint64_t line;
+	uint64_t column;
+	uint64_t length;
+	uint64_t position;
 	char* filename;
 	char* string;
 } Token;
@@ -97,29 +44,137 @@ typedef struct Token
 
 typedef struct Node
 {
-	Token token;
+	void* value;
 	struct Node* next;
 } Node;
 
 
 typedef struct TokenStream
 {
-	Node* head;
-	uint32_t length;
+	Node* tokens;
+	uint64_t length;
 } TokenStream;
 
 
-// —————————————————————————————————————————————————— PROTOTYPES ——————————————————————————————————————————————————— //
+// ———————————————————————————————————————————————————— GLOBAL ————————————————————————————————————————————————————— //
 // —————————————————————————————————————————————————————————————————————————————————————————————————————————————————— //
 
-uint32_t token_type(char string[]);
-uint32_t line_comment_length(char string[]);
-uint32_t hexidecimal_literal_length(char string[]);
-uint32_t binary_literal_length(char string[]);
-uint32_t octal_literal_length(char string[]);
-uint32_t decimal_literal_length(char string[]);
-uint32_t double_literal_length(char string[]);
+Node* add_value_to_linked_list(Node** head, void* value);
+void delete_linked_list(Node** head, void(*delete_node_value_function)(void*));
+
+void delete_token(void* token_pointer);
+Token* new_complete_token(uint64_t column, char filename[], uint64_t length, uint64_t line, uint64_t position, char* token_string, uint16_t type);
+Token* new_partial_token(uint64_t length, uint64_t position, char* token_string, uint16_t type);
+
+TokenStream get_token_stream(char string[]);
+char* next_token(uint64_t* length, char string[], uint16_t* type);
+uint64_t line_comment_length(char string[]);
+uint64_t white_space_length(char string[]);
+uint64_t hexidecimal_int_literal_length(char string[]);
+uint64_t binary_int_literal_length(char string[]);
+uint64_t octal_int_literal_length(char string[]);
+uint64_t decimal_int_literal_length(char string[]);
+uint64_t double_literal_length(char string[]);
+
 FILE* validate_and_open_znk_file(char filename[]);
+char* get_file_contents(FILE* file);
+
+
+// —————————————————————————————————————————————————— LINKED LIST ——————————————————————————————————————————————————— //
+// —————————————————————————————————————————————————————————————————————————————————————————————————————————————————— //
+
+
+Node* add_value_to_linked_list(Node** head, void* value)
+{
+	Node* new_node = malloc(sizeof(new_node));
+	new_node->next = NULL;
+	new_node->value = value;
+
+	if(!*head) *head = new_node;
+	else
+	{
+		Node* iter = *head;
+		for(uint64_t x = 0; iter->next && x < UINT64_MAX; x++) iter = iter->next;
+		iter->next = new_node;
+	}
+
+	return new_node;
+}
+
+
+void delete_linked_list(Node** head, void(*delete_node_value_function)(void*))
+{
+	Node* iter = *head;
+	*head = NULL;
+
+	for(uint64_t x = 0; iter && x < UINT64_MAX; x++)
+	{
+		Node* temp = iter->next;
+		if(iter->value) delete_node_value_function(iter->value);
+		free(iter);
+		iter = temp;
+	}
+}
+
+
+void print_linked_list(Node* head, void(*print_function)(void*))
+{
+	for(uint64_t x = 0; head && x < UINT64_MAX; x++)
+	{
+		print_function(head->value);
+	}
+}
+
+
+// ————————————————————————————————————————————————————— TOKEN —————————————————————————————————————————————————————— //
+// —————————————————————————————————————————————————————————————————————————————————————————————————————————————————— //
+
+void delete_token(void* token_pointer)
+{
+	Token* token = (Token*)token_pointer;
+	free(token->filename);
+	free(token->string);
+	free(token);
+}
+
+
+//TODO: fix so that it doesn't run over 120 chars
+Token* new_complete_token(uint64_t column, char filename[], uint64_t length, uint64_t line, uint64_t position, char* token_string, uint16_t type)
+{
+	Token* new_token = malloc(sizeof(Token));
+	new_token->column = column;
+	new_token->length = length;
+	new_token->line = line;
+	new_token->position = position;
+	new_token->string = token_string;
+	new_token->type = type;
+
+	new_token->filename = malloc(strlen(filename)+1);
+	strcpy(new_token->filename, filename);
+
+	return new_token;
+}
+
+
+Token* new_partial_token(uint64_t length, uint64_t position, char* token_string, uint16_t type)
+{
+	Token* new_token = malloc(sizeof(Token));
+	new_token->length = length;
+	new_token->position = position;
+	new_token->string = token_string;
+	new_token->type = type;
+
+	return new_token;
+}
+
+
+void print_token(void* token_pointer)
+{
+	Token* token = (Token*)token_pointer;
+	printf(	"Token:\n\tcolumn: %llu\n\tfilename: %s\n\tlength: %llu"
+			"\n\tline: %llu\n\tposition: %llu\n\tstring: %s\n\ttype:%u\n",
+			token->column, token->filename, token->length, token->line, token->position, token->string, token->type);
+}
 
 
 // ———————————————————————————————————————————— TOKEN TYPES DETERMINERS ————————————————————————————————————————————— //
@@ -127,44 +182,60 @@ FILE* validate_and_open_znk_file(char filename[]);
 
 TokenStream get_token_stream(char string[])
 {
-	for(uint32_t x = 0; string[x] && x < 0xFFFFFFFF; x++)
+	#include "LengthFunctions.h"
+
+	TokenStream token_stream = {NULL, 0};
+	Node** iterator = &token_stream.tokens;
+
+	for(uint64_t x = 0; string[x] && x < UINT64_MAX; x++)
 	{
-		uint32_t type = 
+		uint64_t length;
+		uint16_t type;
+		char* token_string = next_token(&length, string+x, &type);
+
+		if(token_string == NULL) continue;
+
+		Token* new_token = new_partial_token(length, x, string+x, type);
+		add_value_to_linked_list(&token_stream.tokens, (void*)new_token);
+
+		x += length;
 	}
+	return token_stream;
 }
 
 
-uint32_t token_type(char string[])
+char* next_token(uint64_t* length, char string[], uint16_t* type)
 {
-	// ———— OVERHEAD ————
-	uint32_t (*length_functions[])(char*) =
-	{
-		white_space_length,
-		line_comment_length,
-		hexidecimal_literal_length,
-		binary_literal_length,
-		octal_literal_length,
-		decimal_literal_length,
-	};
-
-	uint32_t lengths[sizeof(line_comment_length) / sizeof(void*)];
-
+	#include "LengthFunctions.h"
 
 	// ———— CALCULATE ————
 	// calculate the lengths for each type of symbol match
-	for(uint32_t x = 0; x < sizeof(line_comment_length) / sizeof(void*); x++)
+	uint64_t longest_match_length = 0, longest_match_type = 0;
+	for(uint64_t type = 0; type < MAX_SYMBOL_COUNT; type++)
 	{
-		lengths[x] = length_functions[x](string);
+		if(LENGTH_FUNCTIONS[type])  //TESTING
+		{  //TESTING
+			uint64_t type_match_length = LENGTH_FUNCTIONS[type](string);
+			if(type_match_length > longest_match_length)
+			{
+				longest_match_length = type_match_length;
+				longest_match_type = type;
+			}
+		}  //TESTING
 	}
 
-	// determine longest match
-	uint32_t longest_match = 0, longest_match_index = -1;
-	for(uint32_t x = 0; x < sizeof(line_comment_length) / sizeof(void*); x++)
+	*length = longest_match_length;
+	*type = longest_match_type;
+
+	char* token_string = NULL;
+	if(type)
 	{
-		printf("X: %d, Length: %d\n", x, lengths[x]);
+		token_string = malloc(longest_match_length+1);
+		strncpy(token_string, string, longest_match_length);
+		token_string[longest_match_length] = 0;
 	}
 
-	return 0;
+	return token_string;
 }
 
 
@@ -172,19 +243,19 @@ uint32_t token_type(char string[])
 
 
 // Regex: //.*
-uint32_t line_comment_length(char string[])
+uint64_t line_comment_length(char string[])
 {
-	register uint32_t x = 0;
+	register uint64_t x = 0;
 	if(string[0] != '/' || string[1] != '/') return x;
-	for(x = 2; string[x] && STRING_CHAR_IS_NOT_NEWLINE && x < 0xFFFFFFFF; x++);
+	for(x = 2; string[x] && STRING_CHAR_IS_NOT_NEWLINE && x < UINT64_MAX; x++);
 	return x;
 }
 
 
-uint32_t white_space_length(char string[])
+uint64_t white_space_length(char string[])
 {
-	uint32_t x;
-	for(x = 0; STRING_CHAR_IS_WHITESPACE && x < 0xFFFFFFFF; x++);
+	uint64_t x;
+	for(x = 0; STRING_CHAR_IS_WHITESPACE && x < UINT64_MAX; x++);
 	return x;
 }
 
@@ -196,55 +267,53 @@ uint32_t white_space_length(char string[])
 // ———————————————————————————————————————————————————— LITERALS ————————————————————————————————————————————————————— //
 
 // Regex: 0x[0-9]+
-uint32_t hexidecimal_literal_length(char string[])
+uint64_t hexidecimal_int_literal_length(char string[])
 {
 	if(!string[0] || !string[1]) return 0;
 	if(string[0] != '0' || string[1] != 'x') return 0;
 
-	uint32_t x = 0;
-	for(x = 2; HEXIDECIMAL_ALLOWED_VALUES && x < 0xFFFFFFFF; x++);
+	uint64_t x;
+	for(x = 2; HEXIDECIMAL_ALLOWED_VALUES && x < UINT64_MAX; x++);
 	return (x != 2) * x;
 }
 
 
 // Regex: 0b[01]+
-uint32_t binary_literal_length(char string[])
+uint64_t binary_int_literal_length(char string[])
 {
 	if(!string[0] || !string[1]) return 0;
 	if(string[0] != '0' || string[1] != 'b') return 0;
 
-	uint32_t x = 0;
-	for(x = 2; 47 < string[x] && string[x] < 50 && x < 0xFFFFFFFF; x++);
+	uint64_t x;
+	for(x = 2; 47 < string[x] && string[x] < 50 && x < UINT64_MAX; x++);
 	return (x != 2) * x;
 }
 
 
-uint32_t octal_literal_length(char string[])
+uint64_t octal_int_literal_length(char string[])
 {
 	if(!string[0] || !string[1]) return 0;
 	if(string[0] != '0') return 0;
 
-	uint32_t x = 0;
-	for(x = 1; 47 < string[x] && string[x] < 57 && x < 0xFFFFFFFF; x++);
+	uint64_t x;
+	for(x = 1; 47 < string[x] && string[x] < 57 && x < UINT64_MAX; x++);
 	return (x != 1) * x;
 }
 
 
-uint32_t decimal_literal_length(char string[])
+uint64_t decimal_int_literal_length(char string[])
 {
-
 	if(!string[0]) return 0;
-	if(string[0] != '0') return 0;
 
-	uint32_t x = 0;
-	for(x = 1; 47 < string[x] && string[x] < 58 && x < 0xFFFFFFFF; x++);
+	uint64_t x;
+	for(x = 0; 47 < string[x] && string[x] < 58 && x < UINT64_MAX; x++);
 	return x;
 }
 
 
-uint32_t double_literal_length(char string[])
+uint64_t double_literal_length(char string[])
 {
-	uint32_t x = 0;
+	uint64_t x = 0;
 	//TODO
 	return x;
 }
@@ -266,10 +335,35 @@ FILE* validate_and_open_znk_file(char filename[])
 }
 
 
+char* get_file_contents(FILE* file)
+{
+	fseek(file, 0L, SEEK_END);
+	uint64_t size = ftell(file);
+	char* contents = malloc(size);
+
+	rewind(file);
+	char tmp = fgetc(file);
+	for(uint64_t x = 0; tmp != EOF && x < UINT64_MAX; x++)
+	{
+		contents[x] = tmp;
+		tmp = fgetc(file);
+	}
+
+	return contents;
+}
+
+
 
 int main(int argc, char* argv[])
 {
 	FILE* file = validate_and_open_znk_file(argv[1]);
+	char* file_string = get_file_contents(file);
+	printf("STRLEN: %lu\n", strlen(file_string));
+
+	TokenStream token_stream = get_token_stream(file_string);
+	print_linked_list(token_stream.tokens, print_token);
+
+	free(file_string);
 	
 	return 0;
 }
