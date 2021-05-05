@@ -1,2 +1,11 @@
-231 0xEE
- 0b1 331
+
+int main(int argc, char@ argv[])
+{
+	int my_number = 5422;
+	for(int x = 0; x < 0xFF; x++)
+	{
+		my_number += x;
+	}
+
+	return 0;
+}—–
