@@ -17,7 +17,7 @@
 // ———————————————————————————————————————————————————— LITERALS ————————————————————————————————————————————————————— //
 
 // Regex: 0x[0-9]+
-uint64_t hexidecimal_int_literal_length(char string[])
+uint64_t hexidecimal_int_literal_length(char string[], TinyToken* tiny_token)
 {
 	if(!string[0] || !string[1]) return 0;
 	if(string[0] != '0' || string[1] != 'x') return 0;
@@ -29,7 +29,7 @@ uint64_t hexidecimal_int_literal_length(char string[])
 
 
 // Regex: 0b[01]+
-uint64_t binary_int_literal_length(char string[])
+uint64_t binary_int_literal_length(char string[], TinyToken* tiny_token)
 {
 	if(!string[0] || !string[1]) return 0;
 	if(string[0] != '0' || string[1] != 'b') return 0;
@@ -40,7 +40,7 @@ uint64_t binary_int_literal_length(char string[])
 }
 
 
-uint64_t octal_int_literal_length(char string[])
+uint64_t octal_int_literal_length(char string[], TinyToken* tiny_token)
 {
 	if(!string[0] || !string[1]) return 0;
 	if(string[0] != '0') return 0;
@@ -51,7 +51,7 @@ uint64_t octal_int_literal_length(char string[])
 }
 
 
-uint64_t decimal_int_literal_length(char string[])
+uint64_t decimal_int_literal_length(char string[], TinyToken* tiny_token)
 {
 	if(!string[0]) return 0;
 
@@ -61,7 +61,7 @@ uint64_t decimal_int_literal_length(char string[])
 }
 
 
-uint64_t double_literal_length(char string[])
+uint64_t double_literal_length(char string[], TinyToken* tiny_token)
 {
 	uint64_t x = 0;
 	//TODO

@@ -18,33 +18,8 @@
 
 
 #include "LexerLengths.h"
+#include "Global.h"
 #include "Symbols.h"
-
-
-typedef struct Token
-{
-	uint16_t type;
-	uint64_t line;
-	uint64_t column;
-	uint64_t length;
-	uint64_t position;
-	char* filename;
-	char* string;
-} Token;
-
-
-typedef struct Node
-{
-	void* value;
-	struct Node* next;
-} Node;
-
-
-typedef struct TokenStream
-{
-	Node* tokens;
-	uint64_t length;
-} TokenStream;
 
 
 // ———————————————————————————————————————————————————— GLOBAL ————————————————————————————————————————————————————— //
@@ -54,21 +29,21 @@ void print_raw(char string[]);
 
 Node* add_value_to_linked_list(Node** head, void* value);
 void delete_linked_list(Node** head, void(*delete_node_value_function)(void*));
-
+void print_linked_list(Node* head, void(*print_function)(void*));
+void copy_tiny_token(TinyToken* destination, TinyToken* source);
+void delete_tiny_token(void* token_pointer);
+TinyToken duplicate_tiny_token(TinyToken token);
+Token duplicate_token(Token token);
 void delete_token(void* token_pointer);
 Token* new_complete_token(uint64_t column, char filename[], uint64_t length, uint64_t line, uint64_t position, char* token_string, uint16_t type);
 Token* new_partial_token(uint64_t length, uint64_t position, char* token_string, uint16_t type);
 void print_token(void* token_pointer);
 void print_token_type(void* token_pointer);
-
+void print_token_type_verbose(void* token_pointer);
 TokenStream get_token_stream(char string[]);
-char* next_token(uint64_t* length, char string[], uint16_t* type);
-uint64_t line_comment_length(char string[]);
-uint64_t white_space_length(char string[]);
-
+char* next_token(uint64_t* column, uint64_t* length, uint64_t* line, char string[], uint16_t* type);
 FILE* validate_and_open_znk_file(char filename[]);
 char* get_file_contents(FILE* file);
-
 
 
 // ———————————————————————————————————————————————————— UTILITY ————————————————————————————————————————————————————— //
@@ -133,13 +108,39 @@ void print_linked_list(Node* head, void(*print_function)(void*))
 // ————————————————————————————————————————————————————— TOKEN —————————————————————————————————————————————————————— //
 // —————————————————————————————————————————————————————————————————————————————————————————————————————————————————— //
 
-Token copy_token(Token token)
+void copy_tiny_token(TinyToken* destination, TinyToken* source)
+{
+	destination->type = source->type;
+	destination->line = source->line;
+	destination->column = source->column;
+	destination->length = source->length;
+}
+
+
+void delete_tiny_token(void* token_pointer)
+{
+	TinyToken* token = (TinyToken*)token_pointer;
+	free(token);
+}
+
+
+TinyToken duplicate_tiny_token(TinyToken token)
+{
+	TinyToken new_token = {token.type, token.line, token.column, token.length};
+	return new_token;
+}
+
+
+Token duplicate_token(Token token)
 {
 	Token new_token = {token.type, token.line, token.column, token.length, token.position, NULL, NULL};
+
 	new_token.filename = malloc(strlen(token.filename)+1);
 	strcpy(new_token.filename, token.filename);
 	new_token.string = malloc(strlen(token.string)+1);
 	strcpy(new_token.string, token.string);
+
+	return new_token;
 }
 
 
@@ -182,6 +183,14 @@ Token* new_partial_token(uint64_t length, uint64_t position, char* token_string,
 }
 
 
+void print_tiny_token(void* token_pointer)
+{
+	TinyToken* token = (TinyToken*)token_pointer;
+	printf(	"Token:\n\tcolumn: %llu\n\tlength: %llu\n\tline: %llu\n\ttype: %s\n",
+			token->column, token->length, token->line, SYMBOL_TITLES[token->type]);
+}
+
+
 void print_token(void* token_pointer)
 {
 	Token* token = (Token*)token_pointer;
@@ -218,7 +227,7 @@ TokenStream get_token_stream(char string[])
 	for(uint64_t x = 0; string[x] && x < UINT64_MAX; x += length ? length : 1)
 	{
 		uint16_t type;
-		char* token_string = next_token(&column, &length, string+x, &type);
+		char* token_string = next_token(&column, &length, &line, string+x, &type);
 
 		// printf("X: %llu, string[x]: %hhu, Length: %llu\n", x, string[x], length);  //TESTING
 
@@ -231,38 +240,35 @@ TokenStream get_token_stream(char string[])
 }
 
 
-char* next_token(uint64_t* column, uint64_t* line, char string[], uint16_t* type)
+char* next_token(uint64_t* column, uint64_t* length, uint64_t* line, char string[], uint16_t* type)
 {
 	// ———— CALCULATE ————
 	// calculate the lengths for each type of symbol match
-	uint64_t longest_column = *column, longest_length = 0, longest_line = *line, longest_type = 0;
+	TinyToken longest_token = {0, *line, *column, 0};
 	for(uint64_t type = 0; type < MAX_SYMBOL_COUNT; type++)
 	{
-		uint64_t type_column = longest_column, type_line = longline;
 		if(LENGTH_FUNCTIONS[type])  //TESTING: function is implemented
 		{  //TESTING: function is implemented
-			uint64_t type_length = LENGTH_FUNCTIONS[type](&type_column, &type_line, string);
-			if(type_length > longest_length)
+			TinyToken tiny_token = {type, *line, *column, 0};
+			tiny_token.length = LENGTH_FUNCTIONS[type](string, &tiny_token);
+			if(tiny_token.length > longest_token.length)
 			{
-				longest_length = type_length;
-				longest_type = type;
-				longest_column = type_column;
-				longest_line = type_line;
+				copy_tiny_token(&longest_token, &tiny_token);
 			}
 		}  //TESTING: function is implemented
 	}
 
-	*column = longest_column;
-	*length = longest_length;
-	*line = longest_line;
-	*type = longest_type;
+	*column = longest_token.column;
+	*length = longest_token.length;
+	*line = longest_token.line;
+	*type = longest_token.type;
 
 	char* token_string = NULL;
-	if(longest_type)
+	if(longest_token.type)
 	{
-		token_string = malloc(longest_length+1);
-		strncpy(token_string, string, longest_length);
-		token_string[longest_length] = 0;
+		token_string = malloc(longest_token.length+1);
+		strncpy(token_string, string, longest_token.length);
+		token_string[longest_token.length] = 0;
 	}
 
 	return token_string;

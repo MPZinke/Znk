@@ -11,27 +11,44 @@
 ***********************************************************************************************************************/
 
 
-#ifndef _LexerLiterals_
-#define _LexerLiterals_
+
+#ifndef _GLOBAL_
+#define _GLOBAL_
 
 
-#include <stdint.h>
+typedef struct TinyToken
+{
+	uint16_t type;
+	uint64_t line;
+	uint64_t column;
+	uint64_t length;
+} TinyToken;
 
 
-#include "Global.h"
-#include "Symbols.h"
+typedef struct Token
+{
+	uint16_t type;
+	uint64_t line;
+	uint64_t column;
+	uint64_t length;
+	uint64_t position;
+	char* filename;
+	char* string;
+} Token;
 
 
-#define HEXIDECIMAL_ALLOWED_VALUES ((47 < string[x] && string[x] < 58) || (64 < string[x] && string[x] < 71))
+typedef struct Node
+{
+	void* value;
+	struct Node* next;
+} Node;
 
 
-// ———————————————————————————————————————————————————— LITERALS ————————————————————————————————————————————————————— //
-
-uint64_t hexidecimal_int_literal_length(char string[], TinyToken* tiny_token);
-uint64_t binary_int_literal_length(char string[], TinyToken* tiny_token);
-uint64_t octal_int_literal_length(char string[], TinyToken* tiny_token);
-uint64_t decimal_int_literal_length(char string[], TinyToken* tiny_token);
-uint64_t double_literal_length(char string[], TinyToken* tiny_token);
+typedef struct TokenStream
+{
+	Node* tokens;
+	uint64_t length;
+} TokenStream;
 
 
 #endif

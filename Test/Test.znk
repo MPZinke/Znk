@@ -1,4 +1,6 @@
 
+
+
 int main(int argc, char@ argv[])
 {
 	int my_number = 5422;
@@ -6,6 +8,10 @@ int main(int argc, char@ argv[])
 	{
 		my_number += x;
 	}
+
+
+	int my_array.4 = {1, 2, 3, 4};
+	my_array->3 = 3;
 
 	return 0;
 }—–

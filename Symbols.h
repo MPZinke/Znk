@@ -113,7 +113,8 @@ enum
 	// ———— OPERATORS::ADDRESSING
 	DEREFERENCE_OPERATOR,  // $
 	REFERENCE_OPERATOR,  // @
-	DOT_OPERATOR,  // . (for accessing an offset from an address of an array or structure/composition)
+	DOT_OPERATOR,  // . (for adding an offset from an address of an array or structure/composition)
+	ARROW_OPERATOR,  // -> (for accessing an offset from an address of an array or structure/composition)
 
 	// ————— OTHER
 	IDENTIFIER,  // [_—a-zA-Z][_—a-zA-Z0-9]
@@ -202,7 +203,8 @@ enum
 // ———— OPERATORS::ADDRESSING
 #define DEREFERENCE_OPERATOR_DEF "$"
 #define REFERENCE_OPERATOR_DEF "@"
-#define DOT_OPERATOR_DEF "."  // (for accessing an offset from an address of an array or structure/composition)
+#define DOT_OPERATOR_DEF "."
+#define ARROW_OPERATOR_DEF "->"  // (for accessing an offset from an address of an array or structure/composition)
 
 
 
@@ -299,6 +301,7 @@ enum
 #define DEREFERENCE_OPERATOR_TITLE "DEREFERENCE_OPERATOR"
 #define REFERENCE_OPERATOR_TITLE "REFERENCE_OPERATOR"
 #define DOT_OPERATOR_TITLE "DOT_OPERATOR"
+#define ARROW_OPERATOR_TITLE "ARROW_OPERATOR"
 // ———— OTHER
 #define IDENTIFIER_TITLE "IDENTIFIER"
 

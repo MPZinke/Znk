@@ -114,6 +114,7 @@ void setup_length_functions()
 	LENGTH_FUNCTIONS[DEREFERENCE_OPERATOR] = dereference_operator_length;
 	LENGTH_FUNCTIONS[REFERENCE_OPERATOR] = reference_operator_length;
 	LENGTH_FUNCTIONS[DOT_OPERATOR] = dot_operator_length;
+	LENGTH_FUNCTIONS[ARROW_OPERATOR] = arrow_operator_length;
 
 	// ———— OTHER
 	LENGTH_FUNCTIONS[IDENTIFIER] = identifier_length;

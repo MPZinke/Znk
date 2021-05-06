@@ -18,6 +18,9 @@
 #include <stdint.h>
 
 
+#include "Global.h"
+
+
 #define STRING_CHAR_IS_NOT_WHITESPACE ((string[x] < 9 || 13 < string[x]) && string[x] != 32)
 #define STRING_CHAR_IS_WHITESPACE ((8 < string[x] && string[x] < 14) || string[x] == 32)
 #define STRING_CHAR_IS_NOT_NEWLINE (string[x] != 10 && string[x] != 13)
@@ -27,9 +30,9 @@
 
 // ———————————————————————————————————————————————————— REGEXES ————————————————————————————————————————————————————— //
 
-uint64_t line_comment_length(char string[]);
-uint64_t white_space_length(char string[]);
-uint64_t identifier_length(char string[]);
+uint64_t line_comment_length(char string[], TinyToken* tiny_token);
+uint64_t white_space_length(char string[], TinyToken* tiny_token);
+uint64_t identifier_length(char string[], TinyToken* tiny_token);
 
 
 #endif

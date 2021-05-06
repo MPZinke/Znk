@@ -19,13 +19,14 @@
 #include <stdlib.h>
 
 
+#include "Global.h"
 #include "LexerLiterals.h"
 #include "LexerMatching.h"
 #include "LexerRegexes.h"
 #include "Symbols.h"
 
 
-uint64_t (*LENGTH_FUNCTIONS[MAX_SYMBOL_COUNT])(char*);
+uint64_t (*LENGTH_FUNCTIONS[MAX_SYMBOL_COUNT])(char*, TinyToken*);
 
 void setup_length_functions();
 

@@ -19,7 +19,7 @@
 // ———————————————————————————————————————————————————— REGEXES ————————————————————————————————————————————————————— //
 
 // Regex: //.*
-uint64_t line_comment_length(char string[])
+uint64_t line_comment_length(char string[], TinyToken* tiny_token)
 {
 	register uint64_t x = 0;
 	if(string[0] != '/' || string[1] != '/') return x;
@@ -29,7 +29,7 @@ uint64_t line_comment_length(char string[])
 
 
 // Regex: [ \t\r\n\f\z]+
-uint64_t white_space_length(char string[])
+uint64_t white_space_length(char string[], TinyToken* tiny_token)
 {
 	uint64_t x;
 	for(x = 0; STRING_CHAR_IS_WHITESPACE && x < UINT64_MAX; x++);
@@ -38,7 +38,7 @@ uint64_t white_space_length(char string[])
 
 
 // Regex: [_—a-zA-Z][_—a-zA-Z0-9]*
-uint64_t identifier_length(char string[])
+uint64_t identifier_length(char string[], TinyToken* tiny_token)
 {
 	uint64_t x = 0;
 	// if first char is not '–', not A-Z, and not a-z
