@@ -41,7 +41,7 @@ void print_token(void* token_pointer);
 void print_token_type(void* token_pointer);
 void print_token_type_verbose(void* token_pointer);
 TokenStream get_token_stream(char string[]);
-char* next_token(uint64_t* column, uint64_t* length, uint64_t* line, char string[], uint16_t* type);
+char* next_token(TinyToken* current_data, char string[]);
 FILE* validate_and_open_znk_file(char filename[]);
 char* get_file_contents(FILE* file);
 
@@ -153,8 +153,15 @@ void delete_token(void* token_pointer)
 }
 
 
+Token* full_token_from_tiny_token(TinyToken* token, char filename[], uint64_t position, char* token_string)
+{
+	return new_complete_token(token->column, filename, token->length, token->line, position, token_string, token->type);
+}
+
+
 //TODO: fix so that it doesn't run over 120 chars
-Token* new_complete_token(uint64_t column, char filename[], uint64_t length, uint64_t line, uint64_t position, char* token_string, uint16_t type)
+Token* new_complete_token(	uint64_t column, char filename[], uint64_t length, uint64_t line, uint64_t position, 
+  							char* token_string, uint16_t type)
 {
 	Token* new_token = malloc(sizeof(Token));
 	new_token->column = column;
@@ -223,45 +230,43 @@ TokenStream get_token_stream(char string[])
 	TokenStream token_stream = {NULL, 0};
 	Node** iterator = &token_stream.tokens;
 
-	uint64_t column = 0, length = 0, line = 1;  // length is automatically updated to 0 if no match found
-	for(uint64_t x = 0; string[x] && x < UINT64_MAX; x += length ? length : 1)
+	TinyToken current_data = {0, 1, 1, 0};  // column stores ending column
+	for(uint64_t x = 0; string[x] && x < UINT64_MAX; x += current_data.length ? current_data.length : 1)
 	{
-		uint16_t type;
-		char* token_string = next_token(&column, &length, &line, string+x, &type);
+		uint64_t column = current_data.column;  // starting column of token
+		char* token_string = next_token(&current_data, string+x);
 
 		// printf("X: %llu, string[x]: %hhu, Length: %llu\n", x, string[x], length);  //TESTING
-
 		if(token_string == NULL) continue;
 
-		Token* new_token = new_partial_token(length, x, token_string, type);
+		char null = 0;  //TESTING
+		Token* new_token = new_complete_token(	column, &null, current_data.length, current_data.line, 
+		  										x, token_string, current_data.type);
 		add_value_to_linked_list(&token_stream.tokens, (void*)new_token);
 	}
 	return token_stream;
 }
 
 
-char* next_token(uint64_t* column, uint64_t* length, uint64_t* line, char string[], uint16_t* type)
+char* next_token(TinyToken* current_data, char string[])
 {
 	// ———— CALCULATE ————
 	// calculate the lengths for each type of symbol match
-	TinyToken longest_token = {0, *line, *column, 0};
+	TinyToken longest_token = {0, current_data->line, current_data->column, 0};
 	for(uint64_t type = 0; type < MAX_SYMBOL_COUNT; type++)
 	{
 		if(LENGTH_FUNCTIONS[type])  //TESTING: function is implemented
 		{  //TESTING: function is implemented
-			TinyToken tiny_token = {type, *line, *column, 0};
-			tiny_token.length = LENGTH_FUNCTIONS[type](string, &tiny_token);
-			if(tiny_token.length > longest_token.length)
+			TinyToken type_token = {type, current_data->line, current_data->column, 0};
+			type_token.length = LENGTH_FUNCTIONS[type](string, &type_token);
+			if(type_token.length > longest_token.length)
 			{
-				copy_tiny_token(&longest_token, &tiny_token);
+				copy_tiny_token(&longest_token, &type_token);
 			}
 		}  //TESTING: function is implemented
 	}
 
-	*column = longest_token.column;
-	*length = longest_token.length;
-	*line = longest_token.line;
-	*type = longest_token.type;
+	copy_tiny_token(current_data, &longest_token);
 
 	char* token_string = NULL;
 	if(longest_token.type)
@@ -321,7 +326,7 @@ int main(int argc, char* argv[])
 	// print_raw(file_string);  //TESTING
 
 	TokenStream token_stream = get_token_stream(file_string);
-	print_linked_list(token_stream.tokens, print_token_type_verbose);
+	print_linked_list(token_stream.tokens, print_token);
 
 	free(file_string);
 	

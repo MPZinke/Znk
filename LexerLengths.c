@@ -24,8 +24,8 @@ void setup_length_functions()
 	LENGTH_FUNCTIONS[WHITE_SPACE] = white_space_length;
 	// ———— PREPROCESSOR
 	LENGTH_FUNCTIONS[LINE_COMMENT] = line_comment_length;
-	// LENGTH_FUNCTIONS[BLOCK_COMMENT] = block_comment_length;
-	// LENGTH_FUNCTIONS[PREPROCESSOR_INSTRUCTION] = preprocessor_instruction_length;
+	LENGTH_FUNCTIONS[BLOCK_COMMENT] = block_comment_length;
+	LENGTH_FUNCTIONS[PREPROCESSOR_INSTRUCTION] = preprocessor_instruction_length;
 	LENGTH_FUNCTIONS[GLOBAL_SYMBOL] = global_symbol_length;
 	LENGTH_FUNCTIONS[SEMI_COLON] = semi_colon_length;
 

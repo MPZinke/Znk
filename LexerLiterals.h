@@ -32,6 +32,8 @@ uint64_t binary_int_literal_length(char string[], TinyToken* tiny_token);
 uint64_t octal_int_literal_length(char string[], TinyToken* tiny_token);
 uint64_t decimal_int_literal_length(char string[], TinyToken* tiny_token);
 uint64_t double_literal_length(char string[], TinyToken* tiny_token);
+uint64_t character_literal_length(char string[], TinyToken* type_token);
+uint64_t string_literal_length(char string[], TinyToken* type_token);
 
 
 #endif

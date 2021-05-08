@@ -64,6 +64,7 @@ uint64_t bitwise_and_assign_operator_length(char string[], TinyToken* tiny_token
 uint64_t xor_assign_operator_length(char string[], TinyToken* tiny_token);
 uint64_t bit_shift_left_assign_operator_length(char string[], TinyToken* tiny_token);
 uint64_t bit_shift_right_assign_operator_length(char string[], TinyToken* tiny_token);
+uint64_t swap_operator_length(char string[], TinyToken* tiny_token);
 
 uint64_t addition_operator_length(char string[], TinyToken* tiny_token);
 uint64_t subtraction_operator_length(char string[], TinyToken* tiny_token);
