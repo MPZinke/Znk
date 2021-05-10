@@ -7,4 +7,4 @@ run:
 	$(CXX) ZNK.c -o ZNK && ./ZNK test.znk
 
 lexer:
-	$(CXX) Lexer.c Symbols.c LexerLengths.c LexerLiterals.c LexerMatching.c LexerRegexes.c -std=c11 -o Lex
+	$(CXX) Lexer.c LexerLengthMatching.c LinkedList.c Symbol.c Token.c -std=c11 -o Lex

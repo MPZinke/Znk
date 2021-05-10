@@ -11,30 +11,25 @@
 ***********************************************************************************************************************/
 
 
-#ifndef _LEXER_REGEXES_
-#define _LEXER_REGEXES_
+#ifndef _LINKED_LIST_
+#define _LINKED_LIST_
 
 
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 
-#include "Global.h"
+typedef struct Node
+{
+	void* value;
+	struct Node* next;
+} Node;
 
 
-#define STRING_CHAR_IS_NOT_WHITESPACE ((string[x] < 9 || 13 < string[x]) && string[x] != 32)
-#define STRING_CHAR_IS_WHITESPACE ((8 < string[x] && string[x] < 14) || string[x] == 32)
-#define STRING_CHAR_IS_NOT_NEWLINE (string[x] != 10 && string[x] != 13)
-#define IS_CAPITAL_LETTER (64 < string[x] && string[x] < 91)
-#define IS_LOWER_LETTER (96 < string[x] && string[x] < 123)
-#define IS_IDENTIFIER_CHARACTER (IS_CAPITAL_LETTER || IS_LOWER_LETTER || string[x] == '_' || (uint8_t)string[x] == 226)
-
-// ———————————————————————————————————————————————————— REGEXES ————————————————————————————————————————————————————— //
-
-uint64_t line_comment_length(char string[], TinyToken* tiny_token);
-uint64_t preprocessor_instruction_length(char string[], TinyToken* tiny_token);
-uint64_t block_comment_length(char string[], TinyToken* tiny_token);
-uint64_t white_space_length(char string[], TinyToken* tiny_token);
-uint64_t identifier_length(char string[], TinyToken* tiny_token);
+Node* add_value_to_linked_list(Node** head, void* value);
+void delete_linked_list(Node** head, void(*delete_node_value_function)(void*));
+void print_linked_list(Node* head, void(*print_function)(void*));
 
 
 #endif
