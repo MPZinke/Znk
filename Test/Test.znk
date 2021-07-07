@@ -1,5 +1,11 @@
 
 
+comp my_comp =
+{
+	small value;
+	my_comp@ next;
+};
+
 
 int main(int argc, char@ argv[])
 {
@@ -10,8 +16,13 @@ int main(int argc, char@ argv[])
 	}
 
 
+	int index = 2;
 	int my_array—size_of_4.4 = {1, 2, 3, 4};
-	my_array->3 = 3;  // comment goes here;
+	my_array.index = 3;  // comment goes here;
+
+	my_comp = {2, NULL};
+	my_comp.value = my_array.2;
+
 
 	return 0;
 }
