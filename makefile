@@ -1,10 +1,21 @@
+
+########################################################################################################################
+#                                                                                                                      #
+#   created by: MPZinke                                                                                                #
+#   on 2021.07.21                                                                                                      #
+#                                                                                                                      #
+#   DESCRIPTION:                                                                                                       #
+#   BUGS:                                                                                                              #
+#   FUTURE:                                                                                                            #
+#                                                                                                                      #
+########################################################################################################################
+
+
 CXX=clang
 
-all:
-	$(CXX) ZNK.c -o ZNK
+HEADER_PATH=./Headers/
+SOURCE_FILES=./Source/*.c
 
-run:
-	$(CXX) ZNK.c -o ZNK && ./ZNK test.znk
 
 lexer:
-	$(CXX) Lexer.c LexerLengthMatching.c LinkedList.c Symbol.c Token.c -std=c11 -o Lex
+	$(CXX) -I $(HEADER_PATH) $(SOURCE_FILES) -std=c11 -o Lex

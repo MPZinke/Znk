@@ -102,7 +102,7 @@ void print_tiny_token(void* token_pointer)
 	TinyToken* token = (TinyToken*)token_pointer;
 	Symbol* symbol = find_symbol_by_(token->type);
 	char* title = symbol ? symbol->title : "";
-	printf(	"Token:\n\tcolumn: %llu\n\tlength: %llu\n\tline: %llu\n\ttype: %s\n",
+	printf(	"Token:\n\tcolumn: %lu\n\tlength: %lu\n\tline: %lu\n\ttype: %s\n",
 			token->column, token->length, token->line, title);
 }
 
@@ -112,8 +112,8 @@ void print_token(void* token_pointer)
 	Token* token = (Token*)token_pointer;
 	Symbol* symbol = find_symbol_by_(token->type);
 	char* title = symbol ? symbol->title : "";
-	printf(	"Token:\n\tcolumn: %llu\n\tfilename: %s\n\tlength: %llu"
-			"\n\tline: %llu\n\tposition: %llu\n\tstring: %s\n\ttype: %s\n",
+	printf(	"Token:\n\tcolumn: %lu\n\tfilename: %s\n\tlength: %lu"
+			"\n\tline: %lu\n\tposition: %lu\n\tstring: %s\n\ttype: %s\n",
 			token->column, token->filename, token->length, token->line, 
 			token->position, token->string, title);
 }

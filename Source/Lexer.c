@@ -50,7 +50,7 @@ void print_raw(char string[])
 {
 	for(uint64_t x = 0; string[x] && x < UINT64_MAX; x++)
 	{
-		printf("X: %llu, string[x]: %hhu\n", x, string[x]);
+		printf("X: %lu, string[x]: %hhu\n", x, string[x]);
 	}
 }
 
@@ -69,7 +69,7 @@ TokenStream get_token_stream(char string[])
 		uint64_t column = current_data.column;  // starting column of token
 		char* token_string = next_token(&current_data, string+x);
 
-		// printf("X: %llu, string[x]: %hhu, Length: %llu\n", x, string[x], length);  //TESTING
+		// printf("X: %lu, string[x]: %hhu, Length: %lu\n", x, string[x], length);  //TESTING
 		if(token_string == NULL) continue;
 
 		char null = 0;  //TESTING
